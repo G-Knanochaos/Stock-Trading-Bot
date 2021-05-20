@@ -1,5 +1,7 @@
 import time
 import json
+import math
+import yfinance
 from finviz.screener import Screener
 
 print ("Initializing...")
@@ -26,3 +28,33 @@ def FindTopStocks():
 def SortSystem(elem):
   return abs(elem[1])
 
+#converts stock list to dictionary
+def ConvertStockList(lst):
+  stocks = []
+  for item in lst:
+    stock = {
+      "Ticker" : item[0],
+      "Rating" : float(item[1]),
+      "Price" : float(item[2]),
+      "Shares" : item[3]
+      }
+    stocks.append(stock)
+  return stocks
+
+def UpdateJson(obj):
+  with open("json/StockStorage.json", 'w') as file:
+    json.dump(obj, file)
+
+#file is string of file path
+#changes specific key in JSON file
+def ChangeKey (key,file,mod):
+  fileContent = json.loads(open(file).read())
+  fileContent[key] = mod
+  with open(file, "w") as f:
+    json.dump(fileContent, f)
+
+#file is string of file path
+#converts json to python str
+def ConvertJson(file):
+  return json.loads(open(file).read())
+  
