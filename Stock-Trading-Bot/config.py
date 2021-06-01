@@ -1,4 +1,4 @@
-API_KEY = 'PKK3YPJ4YCOESUGLFGQB'
-API_SECRET = 'HWtPbVwRoPJqL4qgdmgMBhDT2aNOp6bRFKmF412h'
+API_KEY = '(insert key here)'
+API_SECRET = '(insert secret key here)'
 API_BASE_URL = 'https://paper-api.alpaca.markets'
 
