@@ -19,7 +19,7 @@ def findStockValuation(tickerName):
   try:
     price = float(get_current_price(ticker))
   except:
-    return 0
+    return 0, 0 ,0
 
   global levels
   levels = []
@@ -32,7 +32,7 @@ def findStockValuation(tickerName):
       l = round(df['High'][i],3)
       if isFarFromLevel(l):
         levels.append([i,l,1])
-
+        
   if len(levels) > 1:
     while len(levels) > 2:
       levels.remove(min(levels))
@@ -42,24 +42,26 @@ def findStockValuation(tickerName):
       res = resistance[0]
       sup = support[0]
     except:
-      return 0 
-    rDis = res/price - 1
-    sDis = sup/price - 1
-    potProfit = res/sup
-    buyStrength = ((rDis+sDis) * potProfit) * 100
-    print (buyStrength)
-    return buyStrength
-  return 0
+      return 0, 0, 0
+    if price < res and price > sup:
+      rDis = res/price - 1
+      sDis = sup/price - 1
+      potProfit = res/sup
+      buyStrength = (rDis+sDis) * potProfit * 100
+      print(buyStrength)
+      return -buyStrength, res, sup
+  return 0, 0, 0
+  
 
 def get_current_price(symbol):
   todays_data = symbol.history(period='1d')
   return round(todays_data['Close'][0],3)
 
 def isSupport(df,i):
-  support = df['Low'][i] < df['Low'][i-1]  and df['Low'][i] < df['Low'][i+1] and df['Low'][i+1] < df['Low'][i+2] and df['Low'][i-1] < df['Low'][i-2]
+  support = df['Low'][i] < df['Low'][i-1]  and df['Low'][i] < df['Low'][i+1] and df['Low'][i+1] < df['Low'][i+2] and df['Low'][i-1] < df['Low'][i-2] and df['Low'][i+2] < df['Low'][i+3] and df['Low'][i-2] < df['Low'][i-3]
   return support
 def isResistance(df,i):
-  resistance = df['Low'][i] > df['Low'][i-1]  and df['Low'][i] > df['Low'][i+1] and df['Low'][i+1] > df['Low'][i+2] and df['Low'][i-1] > df['Low'][i-2]
+  resistance = df['Low'][i] > df['Low'][i-1]  and df['Low'][i] > df['Low'][i+1] and df['Low'][i+1] > df['Low'][i+2] and df['Low'][i-1] > df['Low'][i-2] and df['Low'][i+2] > df['Low'][i+3] and df['Low'][i-2] > df['Low'][i-3]
   return resistance
 
 def average(lst):
