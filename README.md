@@ -1,9 +1,9 @@
 # Stock-Trading-Bot
 Current Specs:
-- Buys based on the current trend of stock within the Support and Resistance range. (buying if near resistance, selling if near support)
+- Buys based on the future trend of stock within the Support and Resistance range. (selling if near resistance, buying if near support)
 - Sells based solely on portfolio cleaning (any stock with 0 buystrength are sold, but are kept otherwise)
 - Buys and Sells no matter what (even if a stock is not at its prime price, it buys)
-- Doesn't use stop loss or limits
+- Uses Stop Loss (no limits)
 
 Sheets for data recording: https://docs.google.com/spreadsheets/d/1U7EP-msDR5oD8DxIaZaEDd2J1GgQKgmN7TRZsprricQ/edit?usp=sharing
 
