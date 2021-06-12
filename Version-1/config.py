@@ -1,4 +1,4 @@
-API_KEY = 'PKO58Y0VACIOMI4CNUWJ'
-API_SECRET = 'fDXcPbqAwftUkLnChJwQrr3iHaAVARNH1zt1LSO9'
+API_KEY = 'INSERT KEY'
+API_SECRET = 'INSERT KEY'
 API_BASE_URL = 'https://paper-api.alpaca.markets'
-
+#Link used in paper trading (different link for real trading)
