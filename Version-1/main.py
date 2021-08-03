@@ -13,7 +13,7 @@ if input('Override Market Wait?') == 'n':
     now = datetime.datetime.now()
     current_time = int(now.strftime("%H%M"))
     print(current_time)
-    if current_time >= 630 or current_time <= 800:
+    if current_time >= 630 and current_time <= 800:
       print('Start time: {}'.format(current_time))
       break
     time.sleep(60)
