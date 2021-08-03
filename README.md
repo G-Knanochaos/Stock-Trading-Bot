@@ -1,8 +1,8 @@
 # Stock-Trading-Bot
 Current Specs:
-- Buys if current price is near support AND is in *uptrend or if current prrice is near resistance AND is in *downtrend 
-- Liquidates positions at the end of each day
-- Uses Stop Loss (no limits)
+- Updates every morning (with clock checker)
+- Thin triple-layer SR identification
+- Thin double-layer trend determination using 'Close' price points (better to compare prices during similar times of the day)
 
 Sheets for data recording: https://docs.google.com/spreadsheets/d/1U7EP-msDR5oD8DxIaZaEDd2J1GgQKgmN7TRZsprricQ/edit?usp=sharing
 
