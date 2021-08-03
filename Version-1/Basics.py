@@ -51,8 +51,9 @@ def stockCalc(buying_power,date):
     TotalRating += abs(stock[1])
   for stock in Stocks:
     FindStockShares(stock, TotalRating, buying_power)
-  UpdateJson(ConvertStockList(Stocks))
-  ChangeKey("Date","/Users/oceanhawk/Documents/Python/Stock-Trading-Bots/Version-1/json/Var.json",date)
+  UpdateJson(ConvertStockList2(FullStocks), "stocks")
+  UpdateJson(ConvertStockList(Stocks),"StockStorage")
+  ChangeKey("Date","Var",date)
   return Stocks
 
 def FindStockShares(stock, TotalRating, buying_power):
@@ -60,7 +61,7 @@ def FindStockShares(stock, TotalRating, buying_power):
   print(stockp)
   total = stockp*buying_power
   print(total)
-  totalspending = total/stock[5]
+  totalspending = total/stock[-3]
   print(totalspending)
   print("---")
   stock.append(math.floor(totalspending))
@@ -73,23 +74,44 @@ def ConvertStockList(lst):
     stock = {
       "Ticker" : item[0],
       "Rating" : float(item[1]),
-      "Resistance" : (item[2]),
+      "Resistance" : item[2],
       "Support" : item[3],
       "Average Daily Volatility" : item[4],
-      "Price" : float(item[5]),
-      "Shares" : item[6],
-      "Total Spent" : item[7]
+      "Trend" : item[5],
+      "Strength" : item[6],
+      "Average Low to Previous Close" : item[7],
+      "Average High to Previous Close" : item[8],
+      "Price" : float(item[-3]),
+      "Shares" : item[-2],
+      "Total Spent" : item[-1]
       }
     stocks.append(stock)
   return stocks
+def ConvertStockList2(lst):
+  stocks = []
+  for item in lst:
+    stock = {
+      "Ticker" : item[0],
+      "Rating" : float(item[1]),
+      "Resistance" : (item[2]),
+      "Support" : item[3],
+      "Average Daily Volatility" : item[4],
+      "Trend" : item[5],
+      "Strength" : item[6],
+      "Average Low to Previous Close" : item[7],
+      "Average High to Previous Close" : item[8]
+    }
+    stocks.append(stock)
+  return stocks
 
-def UpdateJson(obj):
-  with open("/Users/oceanhawk/Documents/Python/Stock-Trading-Bots/Version-1/json/StockStorage.json", 'w') as file:
+def UpdateJson(obj, file):
+  with open("/Users/oceanhawk/Documents/Python/Stock-Trading-Bots/Version-1/json/{}.json".format(file), 'w') as file:
     json.dump(obj, file)
 
 #file is string of file path
 #changes specific key in JSON file
 def ChangeKey (key,file,mod):
+  file = "/Users/oceanhawk/Documents/Python/Stock-Trading-Bots/Version-1/json/{}.json".format(file)
   fileContent = json.loads(open(file).read())
   fileContent[key] = mod
   with open(file, "w") as f:
