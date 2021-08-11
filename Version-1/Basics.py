@@ -61,7 +61,7 @@ def FindStockShares(stock, TotalRating, buying_power):
   print(stockp)
   total = stockp*buying_power
   print(total)
-  totalspending = total/stock[-3]
+  totalspending = total/stock[9]
   print(totalspending)
   print("---")
   stock.append(math.floor(totalspending))
