@@ -3,6 +3,7 @@ Current Specs:
 - Updates every morning (with clock checker)
 - Thin triple-layer SR identification
 - Thin double-layer trend determination using 'Close' price points (better to compare prices during similar times of the day)
+- Uses top 10 stocks filter, elimates all STCT (strength trend contradiction test) failures
 
 Sheets for data recording: https://docs.google.com/spreadsheets/d/1U7EP-msDR5oD8DxIaZaEDd2J1GgQKgmN7TRZsprricQ/edit?usp=sharing
 
