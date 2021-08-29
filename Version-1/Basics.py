@@ -43,7 +43,7 @@ def findStockList():
 
 def stockCalc(buying_power,date):
   FullStocks = findStockList()
-  Stocks = FullStocks[:10]
+  Stocks = [stock for stock in FullStocks if stock[9] == True]
   TotalRating = 0
   stockp = 0
   for stock in Stocks:
@@ -61,7 +61,7 @@ def FindStockShares(stock, TotalRating, buying_power):
   print(stockp)
   total = stockp*buying_power
   print(total)
-  totalspending = total/stock[9]
+  totalspending = total/stock[10]#change
   print(totalspending)
   print("---")
   stock.append(math.floor(totalspending))
@@ -81,6 +81,7 @@ def ConvertStockList(lst):
       "Strength" : item[6],
       "Average Low to Previous Close" : item[7],
       "Average High to Previous Close" : item[8],
+      "Strength and Trend Contradiction Test" : item[9],
       "Price" : float(item[-3]),
       "Shares" : item[-2],
       "Total Spent" : item[-1]
@@ -99,7 +100,8 @@ def ConvertStockList2(lst):
       "Trend" : item[5],
       "Strength" : item[6],
       "Average Low to Previous Close" : item[7],
-      "Average High to Previous Close" : item[8]
+      "Average High to Previous Close" : item[8],
+      "Strength and Trend Contradiction Test" : item[9]
     }
     stocks.append(stock)
   return stocks
@@ -121,4 +123,8 @@ def ChangeKey (key,file,mod):
 #converts json to python str
 def ConvertJson(file):
   return json.loads(open(file).read())
+
+
+
+  
   
