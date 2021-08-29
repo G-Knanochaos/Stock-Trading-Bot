@@ -17,6 +17,7 @@ def findStockValuation(tickerName):
   df = df.loc[:,['Date', 'Open', 'High', 'Low', 'Close']]
   daylen = len(df['Date'].tolist())
   s = np.mean(df['High'] - df['Low'])*2
+  stct = True
 
   try:
     price = float(get_current_price(ticker))
@@ -80,16 +81,16 @@ def findStockValuation(tickerName):
       #print("trend: {}, stock: {}".format(trend,name)) #trend debugging
       if trend > 1 and strength < 0:
         print("{} eliminated: in up trend".format(name))
-        return 0, 0, 0, 0
+        stct = False
       elif trend < -1 and strength > 0:
         print("{} eliminated: in down trend".format(name))
-        return 0, 0, 0, 0
+        stct = False
       elif not trend > 1 and not trend < -1:
         print("{} eliminated: stock not active".format(name))
-        return 0, 0, 0, 0
+        stct = False
       buyStrength = (strength * abs(trend))
       print("{} stock accepted. Buystrength: {}".format(name,buyStrength,average))
-      return buyStrength, res, sup, average, (trend,point), strength, l_average, h_average
+      return buyStrength, res, sup, average, (trend,point), strength, l_average, h_average, stct
       print("{} eliminated: not enough S&L points".format(name))
   return 0, 0, 0, 0
   
