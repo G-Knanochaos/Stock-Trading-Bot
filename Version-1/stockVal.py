@@ -11,7 +11,7 @@ def findStockValuation(tickerName):
   global name,ticker,df,s,price
   name = tickerName
   ticker = yfinance.Ticker(name)
-  df = ticker.history(interval="1d",period="6mo")
+  df = ticker.history(interval="1d",period="3mo")
   df['Date'] = pd.to_datetime(df.index)
   df['Date'] = df['Date'].apply(mpl_dates.date2num)
   df = df.loc[:,['Date', 'Open', 'High', 'Low', 'Close']]
