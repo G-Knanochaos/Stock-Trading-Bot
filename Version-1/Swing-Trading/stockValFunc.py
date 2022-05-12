@@ -1,17 +1,59 @@
-def isSupport(df,i,layers,stat):
+def isSupport(df,i,stat):
   lst = []
   stat = df[stat]
+  score = 0
+  iterations = 0
+  '''
   for x in range(1,layers+1):
-    lst.append(stat[i] < stat[i-x])
-    lst.append(stat[i] < stat[i+x])
-  return sum(lst) == layers*2
-def isResistance(df,i,layers,stat):
+    lst.append(stat[i-(x-1)] < stat[i-x])
+    lst.append(stat[i+(x-1)] < stat[i+x])
+  '''
+  #'''
+  x = 1
+  current = stat[i]
+  while True:
+    if i+x < len(df) and i-x >= 0:
+      left = stat[i-x]
+      right = stat[i+x]
+      if current < left and current < right:
+        score += ((left/current)-1) + (2*((right/current)-1))
+        iterations += 1
+        x += 1
+      else:
+        break
+    else:
+      break
+  
+  #'''
+  return iterations, score*100
+
+def isResistance(df,i,stat):
   lst = []
   stat = df[stat]
+  score = 0
+  iterations = 0
+  '''
   for x in range(1,layers+1):
-    lst.append(stat[i] > stat[i-x])
-    lst.append(stat[i] > stat[i+x])
-  return sum(lst) == layers*2
+    lst.append(stat[i-(x-1)] < stat[i-x])
+    lst.append(stat[i+(x-1)] < stat[i+x])
+  '''
+  #'''
+  x = 1
+  current = stat[i]
+  while True:
+    if i+x < len(df) and i-x >= 0:
+      left = stat[i-x]
+      right = stat[i+x]
+      if current > left and current > right:
+        score += (-1*((left/current)-1)) + (-2*((right/current)-1))
+        iterations += 1
+        x += 1
+      else:
+        break
+    else:
+      break
+  #'''
+  return iterations, score*100
 
 def average(lst):
   total = 0

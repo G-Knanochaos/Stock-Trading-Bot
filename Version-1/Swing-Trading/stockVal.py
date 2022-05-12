@@ -42,14 +42,20 @@ def findStockValuation(name): #name = stock ticker
   buystrength = 0
   df = fetchData(name)
   daylen = len(df['Date'].tolist())
-  s = np.mean(df['High'] - df['Low'])*2
+  s = (np.mean(df['High']/df['Low'])-1)*0.75
 
-  def isFarFromLevel(l,typ):
+  try:
+    price = float(get_current_price(name))
+  except:
+    print("Price of {} cannot be fetched. Eliminated.".format(name))
+    return None
+
+  def isFarFromLevel(l,typ,i,score):
     lst = []
     level = 0
     least = 100000
     for x in levels:
-      diff = abs(l-x[1])
+      diff = abs((x[1]/l)-1)
       result = diff < s
       if result:
         if diff < least:
@@ -60,13 +66,8 @@ def findStockValuation(name): #name = stock ticker
       index = levels.index(level)
       if levels[index][3] != typ:
         return False
-      levels[index][2] += (abs(s-l)/price) + ((i*i)/(df.shape[0]-thickness-2))
+      levels[index][2] *= (s-least)*10 * score 
     return np.sum(lst) == 0
-
-  try:
-    price = float(get_current_price(name))
-  except:
-    return None
 
   levels = []
   point = None
@@ -74,52 +75,43 @@ def findStockValuation(name): #name = stock ticker
   oc_average = 0
   l_average = 0
   h_average = 0
+  trend = 0
+  potp = 0
   thickness = 4
+  start, end = df.shape[0]-1, df.shape[0]-daylen
 
   #i = current iteration
   #h/l = high or low of current iteration
-  for i in range(df.shape[0]-thickness-1,df.shape[0]-daylen,-1):
-    if df['Close'][i-1] != float("nan"):
-      average += (abs((df['Close'][i]/df['Close'][i-1])-1)) #average daily volatility (per)
-      oc_average += (abs((df['Open'][i]/df['Close'][i])-1)) #average distance between day open and close (per)
-      l_average += (((df['Low'][i]/df['Open'][i])-1)) #average distance between day open and low (per)
-      h_average += (((df['High'][i]/df['Open'][i])-1)) #average distance between day open and close (per)
-    if isSupport(df,i,thickness,'Low'):
+  for i in range(start,end,-1):
+    s_info = isSupport(df,i,'Low')
+    if s_info[0] >= thickness: #if amount of iterations >= thickness
       l = df['Low'][i]
-      if isFarFromLevel(l,'s'):
-        levels.append([i,l,1,'s'])
-    elif isResistance(df,i,thickness,'High'):
-      h = df['High'][i]
-      if isFarFromLevel(h,'r'):
-        levels.append([i,h,1,'r'])
-            
-  #price > points[0] can return True or False
-  t_daylen = daylen/2 #true daylen
-  for a in (average, oc_average, l_average, h_average):
-      a = (a/t_daylen)*100
-  if len(levels) > 1:
-    while len(levels) > 2:
-      levels.remove(min([(l[2],l) for l in levels])[1])
-    resistance = [(level[1]) for level in levels if level[1] > price]
-    support = [(level[1]) for level in levels if level[1] < price]
-    if len(resistance) < 1 or len(support) < 1:
-      print("{} eliminated: not within support and resistance".format(name,levels))
-      return None
-    else:
-      res = resistance[0]
-      sup = support[0]
-    trend = findTrend(thickness, df, price)
-    if trend > 0:
-      potp = ((res/price)-1)*100
-    else:
-      potp = ((price/sup)-1)*100
-    #print("trend: {}, stock: {}".format(trend,name)) #trend debugging
-    buyStrength = potp * trend
-    print("{} stock accepted. Buystrength: {}".format(name,buyStrength,average))
-    return buyStrength, res, sup, average, trend, potp, l_average, h_average, oc_average
+      if isFarFromLevel(l,'s',i,s_info[1]):
+        levels.append([i,l,s_info[1],'s'])
+      continue
 
-  print("{} eliminated: not enough S&L points".format(name))
-  return None
+    r_info = isResistance(df,i,'High')
+    if r_info[0] >= thickness:
+      h = df['High'][i]
+      if isFarFromLevel(h,'r',i,r_info[1]):
+        levels.append([i,h,r_info[1],'r'])
+      continue
+ 
+  #price > points[0] can return True or False
+  k = lambda x : x[2]
+  resistances = [level for level in levels if level[3] == 'r']
+  supports = [level for level in levels if level[3] == 's']
+  resistances.sort(reverse=True,key = k)
+  supports.sort(reverse = True, key = k)
+  res = resistances[0]
+  sup = supports[0]
+  if price < sup[1] or price > res[1]:
+    print("{} eliminated: not within support and resistance".format(name,levels))
+    return None
+  #print("trend: {}, stock: {}".format(trend,name)) #trend debugging
+  buyStrength = res[2]+sup[2]
+  print("{} stock accepted. Resistance: {}, {}. Support: {}, {}".format(name,res[1],res[2],sup[1],sup[2]))
+  return buyStrength, res, sup, average, trend, potp, l_average, h_average, oc_average
 
 def get_current_price(ticker):
   symbol = yfinance.Ticker(ticker)
