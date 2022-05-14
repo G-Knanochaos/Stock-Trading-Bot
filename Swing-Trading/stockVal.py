@@ -4,51 +4,21 @@ import yfinance
 import matplotlib.dates as mpl_dates
 from stockValFunc import *
 
-
-def findTrend(thickness, df, price):
-  daylen = len(df['Date'].tolist())
-  go = True
-  for i in range(df.shape[0]-thickness-1,df.shape[0]-daylen,-1):
-    if isSupport(df,i,thickness,'Close'):
-      l = round(df['Close'][i],3)
-      point = (i,l)
-      break
-    elif isResistance(df,i,thickness,'Close'):
-      h = round(df['Close'][i],3)
-      point = (i,h)
-      break
-    if isSupport(df,i,thickness,'Low'):
-      l = round(df['Low'][i],3)
-      point = (i,l)
-      break
-    elif isResistance(df,i,thickness,'High'):
-      h = round(df['High'][i],3)
-      point = (i,h)
-      break
-  rise = ((price/point[1])-1)*100
-  run = df.shape[0]-thickness-point[0]
-  return rise/run
-
 def fetchData(tickerName):
   ticker = yfinance.Ticker(tickerName)
   df = ticker.history(interval="1d",period="6mo")
   df['Date'] = pd.to_datetime(df.index)
   df['Date'] = df['Date'].apply(mpl_dates.date2num)
-  df = df.loc[:,['Date', 'Open', 'High', 'Low', 'Close']]
+  df = df.loc[:,['Date', 'High', 'Low', 'Close']]
   return df
 
 def findStockValuation(name): #name = stock ticker
   lines = []
   buystrength = 0
   df = fetchData(name)
+  price = round((df['Close'].iloc[-1]),2)
   daylen = len(df['Date'].tolist())
   s = (np.mean(df['High']/df['Low'])-1)*0.75
-
-  try:
-    price = float(get_current_price(name))
-  except:
-    print("Price of {} cannot be fetched. Eliminated.".format(name))
-    return None
 
   def isFarFromLevel(l,typ,i,score):
     lst = []
@@ -109,11 +79,13 @@ def findStockValuation(name): #name = stock ticker
     print("{} eliminated: not within support and resistance".format(name,levels))
     return None
   #print("trend: {}, stock: {}".format(trend,name)) #trend debugging
-  buyStrength = res[2]+sup[2]
+  threshold = (res[1]-sup[1])/10
+  if ((sup[1]+threshold) > price):
+    buyStrength = sup[2]
+  elif ((res[1]-threshold) < price):
+    buyStrength = -res[2]
+  else:
+    return None
   print("{} stock accepted. Resistance: {}, {}. Support: {}, {}".format(name,res[1],res[2],sup[1],sup[2]))
-  return buyStrength, res, sup, average, trend, potp, l_average, h_average, oc_average
+  return buyStrength, res, sup, price
 
-def get_current_price(ticker):
-  symbol = yfinance.Ticker(ticker)
-  todays_data = symbol.history(period='1d')
-  return round(todays_data['Close'][0],3)
