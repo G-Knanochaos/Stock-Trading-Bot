@@ -1,0 +1,230 @@
+{% extends "base2.html" %} {% block title %}Sign-up{% endblock %} 
+{% block head_specs %}
+<link
+      href="https://uploads-ssl.webflow.com/62e8b794c129c6d31dfb3e87/css/g-ks-dandy-site.webflow.ac37f78a8.css"
+      rel="stylesheet"
+      type="text/css"
+    />
+<style>
+label {
+  font-weight: bold;
+}
+</style>
+{% endblock %}
+{% block
+content %}
+<script type = "text/javascript">
+  function LoadNextQuestion(QuestionID) {
+    let el = document.getElementById(QuestionID);
+    el.style = "display:block";
+  }
+</script>
+
+<div class="container" style = "text-align:left">
+<form method="POST">
+  <h3 align="center">Sign Up</h3>
+  <div class="form-group">
+    <label for="email">Email Address</label>
+    <input
+      type="email"
+      class="form-control"
+      id="email"
+      name="email"
+      placeholder="Enter email"
+      required
+    />
+  </div>
+  <div class="form-group">
+    <label for="username">Username</label>
+    <input
+      type="text"
+      class="form-control"
+      id="username"
+      name="username"
+      placeholder="Enter username"
+      required
+    />
+  </div>
+  <div class="form-group">
+    <label for="Password">Password</label>
+    <input
+      type="password"
+      class="form-control"
+      id="password1"
+      name="password1"
+      placeholder="Enter password"
+      required
+    />
+  </div>
+  <div class="form-group">
+    <input
+      type="password"
+      class="form-control"
+      id="password2"
+      name="password2"
+      placeholder="Confirm password"
+      required
+    />
+  </div>
+  <div class = "form-group">
+    <label for="BTU_rating">What is your AC's BTU rating? (click "not sure" if not sure)</label>
+    <input
+        type="number"
+        class="form-control"
+        id="BTU_rating"
+        name="BTU_rating"
+        placeholder="E.g. 40,000"
+        step = "1"
+        min="1000"
+        max="100000"
+      /> 
+      <button class = "btn btn-light" type="button" onclick="LoadNextQuestion('wattage_form')">
+        Not Sure
+      </button>
+  </div>
+  <div class = "form-group" style = "display:none" id = "wattage_form">
+    <label for="wattage">What is your AC's wattage? (click "not sure" if not sure)</label>
+        <input
+          type="number"
+          class="form-control"
+          id="wattage"
+          name="wattage"
+          placeholder="E.g. 2,000"
+          step = "1"
+          min="83"
+          max="6667" 
+        />
+        <button class = "btn btn-light" type="button" onclick="LoadNextQuestion('type-size_form')">
+          Not Sure
+        </button>
+  </div>
+  <div style = "display:none" id = "type-size_form">
+    <div class="form-group">
+      <label for="size">What is your AC's size?</label>
+      <div class="form-check">
+        <input type="radio" class="form-check-input" id="size-Small" name="size" value="Small" >
+        <label class="form-check-label" for="size">Small</label>
+        <input type="radio" class="form-check-input" id="size-Medium" name="size" value="Medium"  >
+        <label class="form-check-label" for="size">Medium</label>
+        <input type="radio" class="form-check-input" id="size-Large" name="size" value="Large"  >
+        <label class="form-check-label" for="size">Large</label>
+      </div>
+    </div>  
+    <div class="form-group">
+      <label for="type">What is your AC's type?</label>
+      <div class="form-check">
+        <input type="radio" class="form-check-input" id="type-central" name="type" value="Central"  >
+        <label class="form-check-label" for="type">Central</label>
+        <input type="radio" class="form-check-input" id="type-window" name="type" value="Window unit"  >
+        <label class="form-check-label" for="type">Window</label>
+        <input type="radio" class="form-check-input" id="type-mini_split" name="type" value="Mini split"  >
+        <label class="form-check-label" for="type">Mini split</label>
+      </div>
+    </div>  
+  </div>
+  <div class="form-group">
+    <label for="EER">What is your AC's EER (energy effeciency ratio)? (skip if not sure)</label>
+    <input
+      type="number"
+      class="form-control"
+      id="EER"
+      name="EER"
+      placeholder="E.g. 7.5"
+      value = "8.5"
+      step="0.5"
+      min="6.0"
+      max="12.0"
+      required
+    />
+  </div>
+  <div class="form-group">
+    <label for="state">State</label>
+    <select name="state" class = "form-select" id="state_select" required>
+      <option selected disabled>Please select a state</option> 
+      <option value='Alabama'>Alabama</option> 
+      <option value='Alaska'>Alaska</option> 
+      <option value='Arizona'>Arizona</option> 
+      <option value='Arkansas'>Arkansas</option> 
+      <option value='California'>California</option> 
+      <option value='Colorado'>Colorado</option> 
+      <option value='Connecticut'>Connecticut</option> 
+      <option value='Delaware'>Delaware</option> 
+      <option value='Florida'>Florida</option> 
+      <option value='Georgia'>Georgia</option> 
+      <option value='Hawaii'>Hawaii</option> 
+      <option value='Idaho'>Idaho</option> 
+      <option value='Illinois'>Illinois</option> 
+      <option value='Indiana'>Indiana</option> 
+      <option value='Iowa'>Iowa</option> 
+      <option value='Kansas'>Kansas</option> 
+      <option value='Kentucky'>Kentucky</option> 
+      <option value='Louisiana'>Louisiana</option> 
+      <option value='Maine'>Maine</option> 
+      <option value='Maryland'>Maryland</option> 
+      <option value='Massachusetts'>Massachusetts</option> 
+      <option value='Michigan'>Michigan</option> 
+      <option value='Minnesota'>Minnesota</option> 
+      <option value='Mississippi'>Mississippi</option> 
+      <option value='Missouri'>Missouri</option> 
+      <option value='Montana'>Montana</option> 
+      <option value='Nebraska'>Nebraska</option> 
+      <option value='Nevada'>Nevada</option> 
+      <option value='New Hampshire'>New Hampshire</option> 
+      <option value='New Jersey'>New Jersey</option> 
+      <option value='New Mexico'>New Mexico</option> 
+      <option value='New York'>New York</option> 
+      <option value='North Carolina'>North Carolina</option> 
+      <option value='North Dakota'>North Dakota</option> 
+      <option value='Ohio'>Ohio</option> 
+      <option value='Oklahoma'>Oklahoma</option> 
+      <option value='Oregon'>Oregon</option> 
+      <option value='Pennsylvania'>Pennsylvania</option> 
+      <option value='Rhode Island'>Rhode Island</option> 
+      <option value='South Carolina'>South Carolina</option> 
+      <option value='South Dakota'>South Dakota</option> 
+      <option value='Tennessee'>Tennessee</option> 
+      <option value='Texas'>Texas</option> 
+      <option value='Utah'>Utah</option> 
+      <option value='Vermont'>Vermont</option> 
+      <option value='Virginia'>Virginia</option> 
+      <option value='Washington'>Washington</option> 
+      <option value='West Virginia'>West Virginia</option> 
+      <option value='Wisconsin'>Wisconsin</option> 
+      <option value='Wyoming'>Wyoming</option> 
+    </select>
+  </div>
+
+  <div class="form-group">
+    <label for="priority">What would you like to change about your AC usage?</label>
+    <div class="form-check">
+      <input type="radio" class="form-check-input" id="priority-Temperature" name="priority" value="Temperature"  required>
+      <label class="form-check-label" for="priority">Temperature</label>
+    </div>
+    <div class="form-check">
+      <input type="radio" class="form-check-input" id="priority-Hours" name="priority" value="Hours" >
+      <label class="form-check-label" for="priority">Hours</label>
+    </div>
+    <div class="form-check">
+      <input type="radio" class="form-check-input" id="priority-Both" name="priority" value="Both" checked>
+      <label class="form-check-label" for="priority">Both</label>
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="goal_price">How much would you like to spend on your AC every month? (dollars)</label>
+    <input
+        type="number"
+        class="form-control"
+        id="goal_price"
+        name="goal_price"
+        placeholder="E.g. 150"
+        min = "0"
+        step = "1"
+        required
+      />
+  </div>
+  <br />
+  <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+</div>
+<br />
+{% endblock %}

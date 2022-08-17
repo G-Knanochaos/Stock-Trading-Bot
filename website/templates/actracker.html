@@ -1,0 +1,424 @@
+{% extends "base2.html" %} {% block title %}Air Tracker{% endblock %} {%
+block head_specs %}
+<link
+  href="https://uploads-ssl.webflow.com/62e8b794c129c6d31dfb3e87/css/g-ks-dandy-site.webflow.19a544437.css"
+  rel="stylesheet"
+  type="text/css"
+/>
+<style>
+b {
+  color: rgb(89, 155, 255);
+}
+label {
+  font-weight: bold;
+}
+.chart_container {
+
+  padding: 2%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+@media screen and (max-width: 1300px){
+  .chart_container {
+    padding: 2%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;<link
+      href="https://uploads-ssl.webflow.com/62e8b794c129c6d31dfb3e87/css/g-ks-dandy-site.webflow.e26959d40.css"
+      rel="stylesheet"
+      type="text/css"
+    />
+  }
+  .chart_child {
+    width:100% !important;
+  }
+}
+</style>
+<!--Google graph script-->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock %} {% block content %}
+
+<section class="hero-heading-center wf-section">
+  <!--Next Question Request Script-->
+  <br />
+  <div align="center">
+    <h1>Your AC Usage Progress</h1>
+    <p>
+      Discover how much money you've saved and visually see your progress over
+      time.
+    </p>
+  </div>
+</section>
+  {% if not (entry_count > 0) %}
+
+  <div align="center">
+  </br>
+    <h3>
+      It looks like you don't have any data yet! Input your first AC usage log
+      below.
+    </h3>
+    <a
+      href="aircalculator"
+      class="button cc-jumbo-button cc-jumbo-white w-inline-block"
+      ><div>Calculate your AC usage</div></a
+    >
+  </div>
+
+  {% else %}
+  <!--Graph Template-->
+  <div align = "center" style = "margin: 0 2%">
+    <div class = "chart_container">
+      <div class = "chart_child" style="overflow-y:scroll; width: 34%; display: flex; flex-direction:column; justify-content: space-evenly; border: 10px outset rgb(89, 155, 255); border-radius: 10px">
+        {% if user.totalMoneySaved != None %}
+        <div style = "padding: 2%">
+          <hr class="mt-2 mb-3" />
+            <h2>You have saved a total of </h2>
+            <h1 style = "font-weight: bold; color: rgb(0, 139, 39)">${{user.totalMoneySaved}}</h1>
+            <h2>with Airflex...</h2>
+          <hr class="mt-2 mb-3" />
+        </div>
+        {% endif %}
+        <div style = "padding: 2%">
+          <hr class="mt-2 mb-3" />
+          <h2 style = "font-weight: bold">Latest Results:</h2>
+          <h4>- Currently, you spend about <b>${{ chart1[3][-1]  * 30}}</b> on your AC monthly. You are <b>${{ (chart1[3][-1]*30 - user.budget) if (chart1[3][-1]*30 - user.budget) >= 0 else 0}}</b> away from your goal</h4>
+          <h4>- To reach budget goals, you should decrease daily usage time to <b>{{ chart1[5][-1]}} hours</b></h4>
+          <h4>- And you should increase set temperature to <b>{{ chart1[4][-1]}} degrees</b></h4>
+          <hr class="mt-2 mb-3" />
+
+        </div>
+      </div>
+      <div class = "chart_child" style="width: 64%;">
+        <h1 style = "font-weight: bold; color: rgb(0,68,19)">Money spent on AC over time</h1>
+        <h5>A downtrend means Airflex is helping you save money</h5>
+        {% if 5 > entry_count %}
+        <p>Put in a few more entries in the coming days to see progress</p>
+        {% endif %}
+        <div style="border: 10px outset rgb(89, 155, 255); border-radius: 10px">
+              <canvas id="chart3"></canvas>
+              <script>
+                var ctx = document.getElementById("chart3").getContext("2d");
+                var lineChart = new Chart(ctx,{
+                  type: "line",
+                  data: {
+                    labels: {{ chart1[0] | safe }},
+                    datasets: [
+                    {
+                    label: "Dollars spent on entry day",
+                    data: {{ chart1[3] | safe }},
+                    fill: true,
+                    backgroundColor: "rgb(12,237,110,0.7)",
+                    borderColor: "rgb(12,237,110)",
+                    }
+                              ]
+                  },
+                  options: {
+                    responsive: true,
+                    scales: {
+                      y: {
+                        suggestedMin: 0
+                      }
+                    }
+                  }
+                });
+              </script>
+            </div>
+      </div>
+    </div>
+  </div>
+
+  </br>
+  <hr class="mt-2 mb-3" />
+  <div align = "center" style = "margin: 0 2%">
+  <h1 style = "font-weight: bold; color: rgb(0, 18, 68)">AC temperature and hours</h1>
+  <h5>We want to increase temperature and decrease hours. Converging lines means you have reached your AC budget goal.</h5>
+  {% if 5 > entry_count %}
+  <p>Put in a few more entries in the coming days to see progress</p>
+  {% endif %}
+  <div class = "chart_container">
+    <div class = "chart_child" style="width: 49%; border: 10px outset rgb(89, 155, 255); border-radius: 10px">
+    <canvas id="chart1"></canvas>
+    <script>
+      var ctx = document.getElementById("chart1").getContext("2d");
+      var lineChart = new Chart(ctx,{
+        type: "line",
+        data: {
+          labels: {{ chart1[0] | safe }},
+          datasets: [
+          {
+          label: "AC temperature",
+          data: {{ chart1[1] | safe }},
+          fill: true,
+          backgroundColor: "rgb(12,186,247,0.7)",
+          borderColor: "rgb(12,186,247)",
+          },
+          {
+          label: "Suggested AC temperature to reach budget goals",
+          data: {{ chart1[4] | safe }},
+          fill: true,
+          backgroundColor: "rgb(12,186,140,0.7)",
+          borderColor: "rgb(12,186,140)",
+          }
+                    ]
+        },
+        options: {
+          responsive: true,
+          scales: {
+            y: {
+              suggestedMin: 65,
+              suggestedMax: 85,
+            }
+          }
+        }
+      });
+    </script>
+  </div>
+  <br/>
+  <div class = "chart_child" style="width: 49%; border: 10px outset rgb(89, 155, 255); border-radius: 10px">
+    <canvas id="chart2" ></canvas>
+    <script>
+      var ctx = document.getElementById("chart2").getContext("2d");
+      var lineChart = new Chart(ctx,{
+        type: "line",
+        data: {
+          labels: {{ chart1[0] | safe }},
+          datasets: [
+          {
+          label: "Hours used AC daily",
+          data: {{ chart1[2] | safe }},
+          fill: true,
+          backgroundColor: "rgb(12,119,237,0.7)",
+          borderColor: "rgb(12,119,237)",
+          },
+          {
+          label: "Suggested hour use to reach budget goals",
+          data: {{ chart1[5] | safe }},
+          fill: true,
+          backgroundColor: " rgb(12,119,140,0.7)",
+          borderColor: "rgb(12,119,140)",
+          }
+                    ]
+        },
+        options: {
+          responsive: true,
+          scales: {
+            y: {
+              suggestedMin: 0,
+              suggestedMax: 24,
+            }
+          }
+        }
+      });
+    </script>
+  </div>
+  </div>
+  </div>
+
+  {% endif %}
+  <script>
+    function ChangeSettings(hide = false)  {
+      console.log("Run Change Settings")
+      if (hide) {
+        document.getElementById("settings").style = "display:none"
+      }
+      else {
+        document.getElementById("settings").style = "display:block"
+      } 
+    }
+  </script>
+  </br>
+  <hr class="mt-2 mb-3" />
+  <div align = "center" style = "margin: 0 2%">
+    <div style="width: 50px; height: 50px; display:inline-block; vertical-align:baseline">
+    <img src="https://cdn-icons-png.flaticon.com/512/503/503849.png" alt="img"/>
+  </div>
+    <div style="display:inline-block;">
+      <h1>
+        Account Settings
+      </h1>
+    </div>
+    <div style="padding: 1% 0; width: 98%; border: 10px outset rgb(89, 155, 255); border-radius: 10px">
+      {% if user.BTU_rating != None %}
+      <h2>AC BTU rating: <b>{{user.BTU_rating}}</b></h2>
+      <hr class="mt-2 mb-3" />
+      {% elif user.wattage != None %}
+      <h2>AC-wattage: <b>{{user.wattage}}</b></h2>
+      <hr class="mt-2 mb-3" />
+      {% else %}
+      <h2>AC-size: <b>{{user.size}}</b></h2>
+      <hr class="mt-2 mb-3" />
+      <h2>AC-type: <b>{{user.typ}}</b></h2>
+      <hr class="mt-2 mb-3" />
+      {% endif %}
+      <h2>AC-EER (energy effeciency ratio): <b>{{user.EER}}</b></h2>
+      <hr class="mt-2 mb-3" />
+      <h2>State: <b>{{user.state}}</b></h2>
+      <hr class="mt-2 mb-3" />
+      <h2>AC usage change priority (temperature or hours): <b>{{user.priority}}</b></h2>
+      <hr class="mt-2 mb-3" />
+      <h2>AC Budget Goal: <b>${{user.budget}}</b></h2>
+      <br/>
+      <button onclick = "ChangeSettings(false)" class = "btn btn-primary">Change Settings</button>
+      <br/>
+      <div class = "container" style = "display:none" id = "settings">
+        <br/>
+          <form method = "POST" style = "text-align:left">
+            <div class = "form-group">
+              <label for="BTU_rating">What is your AC's BTU rating? (skip if not sure or don't want to change)</label>
+              <input
+                  type="number"
+                  class="form-control"
+                  id="BTU_rating"
+                  name="BTU_rating"
+                  placeholder="E.g. 40,000"
+                  step = "1"
+                  min="1000"
+                  max="100000"
+                /> 
+            </div>
+            <div class = "form-group"  id = "wattage_form">
+              <label for="wattage">What is your AC's wattage? (skip if not sure or don't want to change)</label>
+                  <input
+                    type="number"
+                    class="form-control"
+                    id="wattage"
+                    name="wattage"
+                    placeholder="E.g. 2,000"
+                    step = "1"
+                    min="83"
+                    max="6667" 
+                  />
+            </div>
+              <div class="form-group">
+                <label for="size">What is your AC's size?</label>
+                <div class="form-check">
+                  <input type="radio" class="form-check-input" id="size-Small" name="size" value="Small" >
+                  <label class="form-check-label" for="size">Small</label>
+                  <input type="radio" class="form-check-input" id="size-Medium" name="size" value="Medium"  >
+                  <label class="form-check-label" for="size">Medium</label>
+                  <input type="radio" class="form-check-input" id="size-Large" name="size" value="Large"  >
+                  <label class="form-check-label" for="size">Large</label>
+                </div>
+              </div>  
+              <div class="form-group">
+                <label for="type">What is your AC's type?</label>
+                <div class="form-check">
+                  <input type="radio" class="form-check-input" id="type-central" name="type" value="Central"  >
+                  <label class="form-check-label" for="type">Central</label>
+                  <input type="radio" class="form-check-input" id="type-window" name="type" value="Window unit"  >
+                  <label class="form-check-label" for="type">Window</label>
+                  <input type="radio" class="form-check-input" id="type-mini_split" name="type" value="Mini split"  >
+                  <label class="form-check-label" for="type">Mini split</label>
+                </div>
+              </div>  
+            <div class="form-group">
+              <label for="EER">What is your AC's EER (energy effeciency ratio)? (skip if not sure)</label>
+              <input
+                type="number"
+                class="form-control"
+                id="EER"
+                name="EER"
+                placeholder="E.g. 7.5"
+                value = "8.5"
+                step="0.5"
+                min="6.0"
+                max="12.0"
+                
+              />
+            </div>
+          <div class="form-group">
+          <label  for="state">State</label>
+          <select name="state" class = "form-select" id="state_select" >
+            <option selected disabled>Please select a state</option> 
+            <option value='Alabama'>Alabama</option> 
+            <option value='Alaska'>Alaska</option> 
+            <option value='Arizona'>Arizona</option> 
+            <option value='Arkansas'>Arkansas</option> 
+            <option value='California'>California</option> 
+            <option value='Colorado'>Colorado</option> 
+            <option value='Connecticut'>Connecticut</option> 
+            <option value='Delaware'>Delaware</option> 
+            <option value='Florida'>Florida</option> 
+            <option value='Georgia'>Georgia</option> 
+            <option value='Hawaii'>Hawaii</option> 
+            <option value='Idaho'>Idaho</option> 
+            <option value='Illinois'>Illinois</option> 
+            <option value='Indiana'>Indiana</option> 
+            <option value='Iowa'>Iowa</option> 
+            <option value='Kansas'>Kansas</option> 
+            <option value='Kentucky'>Kentucky</option> 
+            <option value='Louisiana'>Louisiana</option> 
+            <option value='Maine'>Maine</option> 
+            <option value='Maryland'>Maryland</option> 
+            <option value='Massachusetts'>Massachusetts</option> 
+            <option value='Michigan'>Michigan</option> 
+            <option value='Minnesota'>Minnesota</option> 
+            <option value='Mississippi'>Mississippi</option> 
+            <option value='Missouri'>Missouri</option> 
+            <option value='Montana'>Montana</option> 
+            <option value='Nebraska'>Nebraska</option> 
+            <option value='Nevada'>Nevada</option> 
+            <option value='New Hampshire'>New Hampshire</option> 
+            <option value='New Jersey'>New Jersey</option> 
+            <option value='New Mexico'>New Mexico</option> 
+            <option value='New York'>New York</option> 
+            <option value='North Carolina'>North Carolina</option> 
+            <option value='North Dakota'>North Dakota</option> 
+            <option value='Ohio'>Ohio</option> 
+            <option value='Oklahoma'>Oklahoma</option> 
+            <option value='Oregon'>Oregon</option> 
+            <option value='Pennsylvania'>Pennsylvania</option> 
+            <option value='Rhode Island'>Rhode Island</option> 
+            <option value='South Carolina'>South Carolina</option> 
+            <option value='South Dakota'>South Dakota</option> 
+            <option value='Tennessee'>Tennessee</option> 
+            <option value='Texas'>Texas</option> 
+            <option value='Utah'>Utah</option> 
+            <option value='Vermont'>Vermont</option> 
+            <option value='Virginia'>Virginia</option> 
+            <option value='Washington'>Washington</option> 
+            <option value='West Virginia'>West Virginia</option> 
+            <option value='Wisconsin'>Wisconsin</option> 
+            <option value='Wyoming'>Wyoming</option> 
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="priority">What would you like to change about your AC usage?</label>
+
+          <div class="form-check">
+            <input type="radio" class="form-check-input" id="priority-Temperature" name="priority" value="Temperature" >
+            <label class="form-check-label" for="priority">Temperature</label>
+          </div>
+          <div class="form-check">
+            <input type="radio" class="form-check-input" id="priority-Hours" name="priority" value="Hours" >
+            <label class="form-check-label" for="priority">Hours</label>
+          </div>
+          <div class="form-check">
+            <input type="radio" class="form-check-input" id="priority-Both" name="priority" value="Both" >
+            <label class="form-check-label" for="priority">Both</label>
+          </div>
+        </div>
+        <div class="form-group">
+          <label  for="goal_price">How much would you like to spend on your AC every month? (dollars)</label>
+          <input
+              type="number"
+              class="form-control"
+              id="goal_price"
+              name="goal_price"
+              placeholder="E.g. 150"
+              min = "0"
+              step = "1"
+              
+            />
+        </div>
+        <button type="submit" class="btn btn-primary">Save Changes</button>
+        <button type="button" onclick = "ChangeSettings(true)" class="btn btn-primary">Cancel</button>
+        </form>
+    </div>
+    </div>
+  </div>
+  <br/>
+</section>
+{% endblock %}
